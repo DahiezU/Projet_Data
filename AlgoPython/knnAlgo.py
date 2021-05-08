@@ -17,6 +17,7 @@ class PluieKNN():
         namesTrain= ['_id', 'humidity', 'date', 'pressure', 'temperature', 'light', 'rain']
         namesTest= ['_id', 'humidity', 'date', 'pressure', 'temperature', 'light']
         dataTest = pd.read_csv(self.pathDonneeTest , names=namesTest)
+        result = numpy.loadtxt(open(self.pathDonneeTest, "rb"), delimiter=",")
         datasetTrain = pd.read_csv( self.pathDonneeTrain, names=namesTrain)
         #print(dataTest)
         x = datasetTrain.iloc[:,:-1].values
@@ -36,6 +37,7 @@ class PluieKNN():
         classifier = KNeighborsClassifier(n_neighbors=5)
         classifier.fit(X_train, y_train)
 
+
         y_pred = classifier.predict(X_test)
 
         print(confusion_matrix(y_test, y_pred))
@@ -48,6 +50,7 @@ pathTest = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfom
 pathTrain = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dataTrainPetit.csv"
 test = PluieKNN(pathTrain , pathTest)
 test.knn()
+
 
 
 
