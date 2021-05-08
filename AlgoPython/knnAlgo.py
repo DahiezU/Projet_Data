@@ -42,11 +42,11 @@ class PluieKNN():
         print(classification_report(y_test, y_pred))
 
 
-pathTest = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dataTestPetit.csv"
-pathTrain = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dataTrainPetit.csv"
+'''pathTest = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dataTestPetit.csv"
+pathTrain = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dataTrainPetit.csv"'''
 
-'''pathTest = "C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\transfome\dataTestPetit.csv"
-pathTrain = "C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\transfome\dataTrainPetit.csv"'''
+pathTest = "C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\transfome\dataTestPetit.csv"
+pathTrain = "C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\transfome\dataTrainPetit.csv"
 test = PluieKNN(pathTrain , pathTest)
 test.knn()
 
