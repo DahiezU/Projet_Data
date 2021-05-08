@@ -20,15 +20,45 @@ NearestNeighbors(n_neighbors=1)
 (array([[0.5]]), array([[2]]))'''
 
 
-dataset = np.genfromtxt("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dataTestPetit.csv", delimiter=",").astype("int")
+class KNN():
 
-numpy_array = np.genfromtxt("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dataTestPetit.csv", delimiter=",").astype("int")
+    def __init__(self, pathDonneeTrain , pathDonneTest , kvoisins):
+        self.pathDonneeTrain = pathDonneeTrain
+        self.pathDonneeTest = pathDonneTest
+        self.voisin = []
+        self.valeurRes = []
+        self.kvoisins = kvoisins
+
+    def knn(self):
+        datasetTrain = np.genfromtxt(self.pathDonneeTrain, delimiter=",").astype("int")
+        datasetTest = np.genfromtxt(self.pathDonneeTest, delimiter=",").astype("int")
+        neigh = NearestNeighbors(n_neighbors= self.kvoisins )
+        neigh.fit(datasetTrain)
+        b = neigh.kneighbors_graph(datasetTrain)
+        print(b)
+        self.voisin =  neigh.kneighbors([datasetTest])[1][0] 
+        #print(self.voisin)
+
+    def correspondance(self):
+        datasetTrain = np.genfromtxt(self.pathDonneeTrain, delimiter=",").astype("int")
+        for elem in self.voisin:
+            self.valeurRes.append(datasetTrain[elem][-1])
+        print(self.valeurRes)
+
+    def resultat(self):
+        #a = ["a", "b", "a"]
+        result = dict((i, self.valeurRes.count(i)) for i in self.valeurRes)
+        result = dict(sorted(result.items(), key=lambda item: item[1], reverse=True) )
+        print(list(result.keys())[0])
+        return list(result.keys())[0]
 
 
-neigh = NearestNeighbors(n_neighbors=5)
+    
+        
 
 
-neigh.fit(dataset)
+test = KNN("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainFinale.csv" , "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTestFinale.csv" , 10 )
+test.knn()
+#test.correspondance()
+#test.resultat()
 
-
-print(neigh.kneighbors([[111,   73 ,111,   1004 ,   14 ,   0 ]]))

@@ -68,7 +68,7 @@ print(delta.days)
 
 
 dataEntre =  'C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dataTestConvert.csv'
-dataSortie = 'C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dateSortie.csv'
+dataSortie = 'C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dateSortie.csv
 
 
 '''dataEntre =  'C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dataTrainPetit.csv'
