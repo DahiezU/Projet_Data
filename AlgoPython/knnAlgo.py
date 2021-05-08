@@ -23,19 +23,22 @@ class PluieKNN():
 
         # /////////////////// CSV to numpy  ////////////////
         #with open(self.pathDonneeTest, newline='') as csvfile:
-        reader = csv.reader(open("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dateSortie.csv", "r"), delimiter=",")
+        reader = csv.reader(open("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dataTestPetit.csv", "r"), delimiter=",")
         x = list(reader)
-        result = np.array(x).reshape(1, 1)
-        print(result)
-        
+        result = np.array(x)
 
+
+        numpy_array = np.genfromtxt("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dataTestPetit.csv", delimiter=",").astype("int")
+        print( numpy_array)
+        #a = np.array([['12_23_2017_10_24', 65 ,356 ,1011,3 ,0 ],['12_23_2017_10_24', 65 ,356 ,1011,3 ,0 ],['12_23_2017_10_24', 65 ,356 ,1011,3 ,0 ],['12_23_2017_10_24', 65 ,356 ,1011,3 ,0 ] ,['12_23_2017_10_24', 65 ,356 ,1011,3 ,0 ]])
+        #print(a)
         # ///////////////////////////
 
         x = datasetTrain.iloc[:,:-1].values
         y =  datasetTrain.iloc[:,4].values
 
         
-        X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.20)
+        X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.05)
 
         scaler = StandardScaler()
         scaler.fit(X_train)
@@ -43,15 +46,18 @@ class PluieKNN():
 
         X_train = scaler.transform(X_train)
         X_test = scaler.transform(X_test)
+        print("y tesssssssssssssssssssssssssst")
+        print(y_test)
 
-
-        classifier = KNeighborsClassifier(n_neighbors=5)
+        classifier = KNeighborsClassifier(n_neighbors=1)
         classifier.fit(X_train, y_train)
 
 
-        y_pred = classifier.predict(reader)
+        y_pred = classifier.predict(numpy_array)
+        print("y tesssssssssssssssssssssssssst")
+        print(y_pred)
 
-        print(confusion_matrix(y_test, y_pred))
+        #print(confusion_matrix(y_test, y_pred))
         print(classification_report(y_test, y_pred))
 
 
@@ -62,7 +68,7 @@ pathTrain = "C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\tran
 
 
 pathTest = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dataTestPetit.csv"
-pathTrain = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dataTrainPetit.csv"
+pathTrain = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dateTrainPetitOk.csv"
 test = PluieKNN(pathTrain , pathTest)
 test.knn()
 

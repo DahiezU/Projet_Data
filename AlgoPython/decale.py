@@ -40,7 +40,10 @@ def transformDate(CsvEntre , CsvSorti):
                             delta = l_date - f_date 
                             delta = str(delta).split(' ')
                             delta = delta[0]
-                            spamwriter.writerow([row[0] , row[1] , delta , row[3] , row[4] ,  row[6] , row[5]])
+                            if(int(row[5]) != 0):
+                                spamwriter.writerow([delta , row[1] , delta , row[3] , row[4] ,  row[6] , 1])
+                            else:
+                                spamwriter.writerow([delta , row[1] , delta , row[3] , row[4] ,  row[6] , row[5]])
 
 
 
@@ -65,5 +68,14 @@ print(delta.days)
 
 
 dataEntre =  'C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dataTestConvert.csv'
-dataSortie = 'C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dateSortie.csv' 
+dataSortie = 'C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dateSortie.csv'
+
+
+'''dataEntre =  'C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dataTrainPetit.csv'
+dataSortie = 'C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\datetrainPetitOk.csv' '''
+
+
+'''transformDate(dataEntre , dataSortie)'''
+
 transformDate(dataEntre , dataSortie)
+
