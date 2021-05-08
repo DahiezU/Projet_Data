@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, confusion_matrix
-
+import csv
 
 class PluieKNN():
 
@@ -16,10 +16,21 @@ class PluieKNN():
     def knn(self):
         namesTrain= ['_id', 'humidity', 'date', 'pressure', 'temperature', 'light', 'rain']
         namesTest= ['_id', 'humidity', 'date', 'pressure', 'temperature', 'light']
-        dataTest = pd.read_csv(self.pathDonneeTest , names=namesTest)
-        result = numpy.loadtxt(open(self.pathDonneeTest, "rb"), delimiter=",")
+        #dataTest = pd.read_csv(self.pathDonneeTest , names=namesTest)
         datasetTrain = pd.read_csv( self.pathDonneeTrain, names=namesTrain)
         #print(dataTest)
+
+
+        # /////////////////// CSV to numpy  ////////////////
+        #with open(self.pathDonneeTest, newline='') as csvfile:
+        reader = csv.reader(open("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dateSortie.csv", "r"), delimiter=",")
+        x = list(reader)
+        result = np.array(x).reshape(1, 1)
+        print(result)
+        
+
+        # ///////////////////////////
+
         x = datasetTrain.iloc[:,:-1].values
         y =  datasetTrain.iloc[:,4].values
 
@@ -38,19 +49,23 @@ class PluieKNN():
         classifier.fit(X_train, y_train)
 
 
-        y_pred = classifier.predict(X_test)
+        y_pred = classifier.predict(reader)
 
         print(confusion_matrix(y_test, y_pred))
         print(classification_report(y_test, y_pred))
 
 
-pathTest = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dataTestPetit.csv"
-pathTrain = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dataTrainPetit.csv"
 
 '''pathTest = "C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\transfome\dataTestPetit.csv"
 pathTrain = "C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\transfome\dataTrainPetit.csv"'''
+
+
+
+pathTest = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dataTestPetit.csv"
+pathTrain = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dataTrainPetit.csv"
 test = PluieKNN(pathTrain , pathTest)
 test.knn()
+
 
 
 
