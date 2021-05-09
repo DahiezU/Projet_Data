@@ -46,13 +46,13 @@ class Statitstique():
         FP  = 0 
         FN = 0
         for i in range(len(self.resVraie)):
-            if(self.resVraie[i] == 1 &  self.resFound[i] == 1):
+            if(self.resVraie[i] == 1 and  self.resFound[i] == 1):
                 VP+=1
-            elif(self.resVraie[i] == 0 &  self.resFound[i] == 0 ):
-                VN+= 1
-            elif(self.resVraie[i] == 1 &  self.resFound[i] == 0 ):
+            elif(self.resVraie[i] == 0 and  self.resFound[i] == 0 ):
+                VN+=1
+            elif(self.resVraie[i] == 1 and  self.resFound[i] == 0 ):
                 FN+=1
-            elif(self.resVraie[i] == 0 &  self.resFound[i] == 1 ):
+            elif(self.resVraie[i] == 0 and  self.resFound[i] == 1 ):
                 FP+=1
         return {"VP": VP,  "VN":VN  , "FN":FN , "FP":FP}
 
