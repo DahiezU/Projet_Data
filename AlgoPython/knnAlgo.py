@@ -23,12 +23,12 @@ class PluieKNN():
 
         # /////////////////// CSV to numpy  ////////////////
         #with open(self.pathDonneeTest, newline='') as csvfile:
-        reader = csv.reader(open("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dataTestPetit.csv", "r"), delimiter=",")
+        reader = csv.reader(open("C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\transfome\dataTestPetit.csv", "r"), delimiter=",")
         x = list(reader)
         result = np.array(x)
 
 
-        numpy_array = np.genfromtxt("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\\dataTestPetit.csv", delimiter=",").astype("int")
+        numpy_array = np.genfromtxt("C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\transfome\dataTestPetit.csv", delimiter=",").astype("int")
         print( numpy_array)
         #a = np.array([['12_23_2017_10_24', 65 ,356 ,1011,3 ,0 ],['12_23_2017_10_24', 65 ,356 ,1011,3 ,0 ],['12_23_2017_10_24', 65 ,356 ,1011,3 ,0 ],['12_23_2017_10_24', 65 ,356 ,1011,3 ,0 ] ,['12_23_2017_10_24', 65 ,356 ,1011,3 ,0 ]])
         #print(a)
@@ -62,13 +62,13 @@ class PluieKNN():
 
 
 
-'''pathTest = "C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\transfome\dataTestPetit.csv"
-pathTrain = "C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\transfome\dataTrainPetit.csv"'''
+pathTest = "C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\transfome\dataTestPetit.csv"
+pathTrain = "C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\transfome\dataTrainPetit.csv"
 
 
 
-pathTest = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dataTestPetit.csv"
-pathTrain = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dateTrainPetitOk.csv"
+'''pathTest = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dataTestPetit.csv"
+pathTrain = "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\transfome\dateTrainPetitOk.csv"'''
 test = PluieKNN(pathTrain , pathTest)
 test.knn()
 
