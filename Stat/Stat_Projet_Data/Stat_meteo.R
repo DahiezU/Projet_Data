@@ -5,7 +5,7 @@ library(stringr)
 
 library(reticulate)
 
-data_meteo <- read.csv("C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\DataV2\\dataTrainSorti.csv", header=TRUE)
+data_meteo <- read.csv("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSorti.csv", header=TRUE)
 
 View(data_meteo)
 
@@ -44,7 +44,7 @@ moyenneRainSpring <- summary(spring$rain)
 moyenneRainWinter  <- summary(winter$rain) 
 
 
-cor.test( summmer$pressure , summmer$rain )$p.value # 2.406952e-108
+cor.test( summer$pressure , summer$rain )$p.value # 2.406952e-108
 cor.test( autumn$pressure , autumn$rain )$p.value # 9.5555e-69
 cor.test( spring$pressure , spring$rain )$p.value # 1.048323e-116
 cor.test( winter$pressure , winter$rain )$p.value # 0.02563328
@@ -105,6 +105,70 @@ plot(winter$humidity , winter$rain)
 
 
 
+JoursAvant<-function(monCsv){
+  tableau <- c()
+  index <- c()
+  for (i in monCsv){
+    Ligne <- read.csv(i, header=TRUE)
+    pluie <- Ligne['rain']
+    tableau <- c(tableau , which(pluie > 0) )
+    
+    
+    
+  }
+  
+ 
+}
+
+
+
+
+tabdaysBeforeRain <- JoursAvant("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSorti.csv")
+tabDemerde <- c()
+tabdaysBeforeRain <- filter(tabdaysBeforeRain , rain != "NA")
+for (i in 1:length(tabdaysBeforeRain)){
+  if(tabdaysBeforeRain[i]   ==  tabdaysBeforeRain[i+1]-1 ){
+    tabDemerde <- c(tabDemerde ,tabdaysBeforeRain[i] )
+  }
+}
+
+
+
+tabFinale <- c()
+for (i in 1:length(tabDemerde)){
+  if(i!= 1){
+    if(tabDemerde[i]   !=  tabDemerde[i-1]+1){
+      tabFinale <- c(tabFinale ,tabDemerde[i])
+    }else if(tabDemerde[i]   !=  tabDemerde[i+1]-1 ){
+      tabFinale <- c(tabFinale ,tabDemerde[i])
+    }
+  }
+}
+
+
+
+
+data_meteo <- filter(data_meteo , "rain" != "NA")
+data_meteo_season <-filter(data_meteo , "rain" != "NA")
+
+vraiFinal <- c()
+for(i in 1:length(tabFinale)){
+  if( i %% 2 ==0){
+    a <- tabFinale[i+1] - tabFinale[i]
+    if(a > 150 && a < 200){
+      dataFini <- data_meteo_season %>% slice(tabFinale[i]:tabFinale[i+1])
+      print(data_meteo_season %>% slice(tabFinale[i]:tabFinale[i+1]))
+      #vraiFinal <-c(vraiFinal , data_meteo %>% slice(tabFinale[i]:tabFinale[i+1]) )
+      plot(dataFini$humidity)
+      plot(dataFini$temperature)
+      plot(dataFini$pressure)
+      plot(dataFini$light)
+      break;
+    }
+    
+  }
+ 
+}
 
 
 
