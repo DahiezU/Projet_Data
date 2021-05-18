@@ -3,6 +3,8 @@ library(readr)
 library(dplyr)
 library(stringr)
 
+library(reticulate)
+
 data_meteo <- read.csv("C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\DataV2\\dataTrainSorti.csv", header=TRUE)
 
 View(data_meteo)
@@ -99,28 +101,6 @@ cor.test( spring$humidity, spring$rain, method=c("pearson", "kendall", "spearman
 
 plot(winter$humidity , winter$rain)
 
-
-JoursAvant<-function(Tableau){
-  tabRes = c()
-  i =1
-  for (i in Tableau){
-    Ligne <- read.csv(i)
-    if(strtoi(Ligne[,7])  > 0){
-      iter = i
-      for(j in 1:50){
-        ligneto <- read.csv(iter)
-        append(tabRes, ligneto)
-        iter = iter - 1
-      }
-    }
-  }
-  
-  tabRes
-}
-
-tabdaysBeforeRain <- JoursAvant("C:\\Users\\dahie\\Documents\\SDN-S6\\Projet-Data\\Projet_Data\\DataV2\\dataTrainSorti.csv")
-
-View(tabdaysBeforeRain)
 
 
 

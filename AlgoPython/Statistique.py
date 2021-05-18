@@ -70,13 +70,13 @@ class Statitstique():
 
 
 
-a = knnV2.csvToarray("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainFinale.csv" , 
-"C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTestFinale.csv")
+a = knnV2.csvToarray("C:\\Users\\dahie\\Documents\\SDN-S6\\Projet_Data\\DataV2\\dataTrainFinale.csv" , 
+"C:\\Users\\dahie\\Documents\\SDN-S6\\Projet_Data\\DataV2\\dataTestFinale.csv")
 
 #a.convert()
 
-stat   = Statitstique( a.convert()[0] , a.convert()[1] , "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSortiSortie.csv", 
-"C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataVraie.csv",10)
+stat   = Statitstique( a.convert()[0] , a.convert()[1] , "C:\\Users\\dahie\\Documents\\SDN-S6\\Projet_Data\\DataV2\\dataTrainSortiSortie.csv", 
+"C:\\Users\\dahie\\Documents\\SDN-S6\\Projet_Data\\DataV2\\dataVraie.csv",10)
 
 stat.calculKnnTab()
 stat.stockVrai()
