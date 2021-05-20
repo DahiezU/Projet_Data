@@ -201,6 +201,8 @@ for (elem in newCollection){
 a <- newCollection[0]
 View(a)
 
-testi <- monTest("C:\\Users\\dahie\\Documents\\SDN-S6\\Projet_Data\\DataV2\\dataTrainSorti.csv")
 
-View(testi)
+
+
+
+

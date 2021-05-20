@@ -36,9 +36,12 @@ class KNN():
     def knn(self):
         '''datasetTrain = np.genfromtxt(self.pathDonneeTrain, delimiter=",").astype("int")
         datasetTest = np.genfromtxt(self.pathDonneeTest, delimiter=",").astype("int")'''
+        
         neigh = NearestNeighbors(n_neighbors= self.kvoisins ) 
         neigh.fit(self.dataTrain)
         self.voisin =  neigh.kneighbors([self.dataTest])[1][0] 
+        print("self.voisin :: ",self.voisin)
+
         return self.voisin
 
     

@@ -33,12 +33,15 @@ class Statitstique():
         print("Resultat Vrai -> ",self.resVraie)
 
     def calculKnnTab(self):
-            for elem in self.dataTest:
-                knnUnique = knnV2.KNN(self.dataTrain , elem , self.kvoisins)
-                cor= cr.Correspondance(knnUnique.knn() ,  self.pathCsvToCompareTo )
-                cor.correspondance()
-                self.resFound.append(cor.resultat())
-            print("Resultat Trouve -> " ,self.resFound)
+        self.dataTrain = self.dataTrain[0:len(self.dataTrain)-4200]
+
+        for elem in self.dataTest:
+            knnUnique = knnV2.KNN(self.dataTrain , elem , self.kvoisins)
+            cor= cr.Correspondance(knnUnique.knn() ,  self.pathCsvToCompareTo )
+            cor.correspondance()
+            self.resFound.append(cor.resultat())
+        print("Resultat Trouve -> " ,self.resFound)
+
 
     def VFandV(self):
         VP  = 0
@@ -57,26 +60,33 @@ class Statitstique():
         return {"VP": VP,  "VN":VN  , "FN":FN , "FP":FP}
 
     def Accuracy(self,dictVal):
-        return (dictVal['VP'] +  dictVal['VN'] ) / ( dictVal['VP'] + dictVal['FP'] + dictVal['VN'] + dictVal['FN'] )
-
+        if(dictVal['VP'] != 0 and dictVal['VN'] != 0 and dictVal['FP'] != 0 and dictVal['FN'] != 0):
+            return (dictVal['VP'] +  dictVal['VN'] ) / ( dictVal['VP'] + dictVal['FP'] + dictVal['VN'] + dictVal['FN'] )
+        else:
+            return 1
     def Precision(self , dictVal):
-        return dictVal['VP'] /(dictVal['VP'] + dictVal['FP'])
-
+        if(dictVal['VP'] != 0 and dictVal['FP'] != 0):
+            return dictVal['VP'] /(dictVal['VP'] + dictVal['FP'])
+        else: 
+            return 1
     def Sensibilite(self , dictVal):
-        return dictVal['VP'] /(dictVal['VP'] + dictVal['FN'])
-
+        if(dictVal['VP'] != 0 and dictVal['FN'] != 0):
+            return dictVal['VP'] /(dictVal['VP'] + dictVal['FN'])
+        else:
+            return 1
     def F1_score(self , confiance , sensibilite , dictVal):
-        return 2*(  (self.Precision(dictVal) * (self.Sensibilite(dictVal)) ) /  ( (self.Precision(dictVal) + (self.Sensibilite(dictVal))) )  )
+        
+            return 2*(  (self.Precision(dictVal) * (self.Sensibilite(dictVal)) ) /  ( (self.Precision(dictVal) + (self.Sensibilite(dictVal))) )  )
 
 
 
-a = knnV2.csvToarray("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainFinale.csv" , 
-"C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTestFinale.csv")
+a = knnV2.csvToarray("C:\\Users\\dahie\\Documents\\SDN-S6\\Projet_Data\\DataV2\\dataTrainFinale.csv" , 
+"C:\\Users\\dahie\\Documents\\SDN-S6\\Projet_Data\\DataV2\\dataTestFinale.csv")
 
 #a.convert()
 
-stat   = Statitstique( a.convert()[0] , a.convert()[1] , "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSortiSortie.csv", 
-"C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataVraie.csv",10)
+stat   = Statitstique( a.convert()[0] , a.convert()[1] , "C:\\Users\\dahie\\Documents\\SDN-S6\\Projet_Data\\DataV2\\dataTrainSortiSortie.csv", 
+"C:\\Users\\dahie\\Documents\\SDN-S6\\Projet_Data\\DataV2\\dataVraie.csv",10)
 
 stat.calculKnnTab()
 stat.stockVrai()

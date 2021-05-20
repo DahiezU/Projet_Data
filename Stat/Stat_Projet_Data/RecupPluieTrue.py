@@ -1,13 +1,9 @@
-<<<<<<< HEAD
-import pandas
-=======
 
 import pandas as pd
 from pandas.core.frame import DataFrame
 def openMonCsv(ver):
     data = pd.read_csv(ver)
     return data
->>>>>>> 714d79c216d0b9c29a4a536975928c9acb2512a8
 
 def trie(data) :
     tabindexDebutFinPluieFalse = []
@@ -27,12 +23,6 @@ def trie(data) :
     #print(tabindexDebutFinPluieFalse)
     return tabindexDebutFinPluieFalse
 
-<<<<<<< HEAD
-def monTest(ver):
-    moncsv = []
-    ble = pandas.read_csv(ver)
-    return ble
-=======
 
 def SubsetData(tabindexDebutFinPluieFalse):
     dataframe_collection = [] 
@@ -60,4 +50,3 @@ tabDataFrame = SubsetData(maTabPluie)
 newCollection = TrieTaille(50,tabDataFrame , monCsv)
 
 print(newCollection)
->>>>>>> 714d79c216d0b9c29a4a536975928c9acb2512a8

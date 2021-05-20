@@ -1,0 +1,49 @@
+---
+title: "Raport_Projet_AcLab"
+author: "Dahiez Burdy"
+date: "20/05/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(dplyr)
+library(plotrix)
+library(questionr)
+library(jsonlite)
+library(maps)
+
+```
+
+# Introduction 
+
+Sur ce tp, nous allons annalyser des données météo enregistré par une sonde météorologique conçu par la filière IOT Maker, ces données sont constitué, de la date et heure, l'humidité, pression, temperature, intensité lumineuse et la pluie.avec ces données nous allons étudier quelles sont les facteurs qui annoncent la pluie. comme par exemple si le taux d'humidité augmente avant qu'il pleuve. 
+
+- Hypothèse :
+
+Nous émetons l'hypothèse que la diminution de pression est un facteur annonciateur de la pluie.
+Nous émetons l'hipothèse que le facteur d'humidité est un facteur annonciateur de la pluie plus conséquent en hiver que pendant les autres saisons.
+Nous émetons l'hypothèse que la température diminue avant l'arrivé de la pluie.
+Nous émetons l'hypothèse que si nous detectons la présence de la pluie moins de 10 minutes avant la prédiction, la probabilitée augmente. 
+
+
+## 
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
