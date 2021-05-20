@@ -122,62 +122,84 @@ JoursAvant<-function(monCsv){
 
 
 
-
-tabdaysBeforeRain <- JoursAvant("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSorti.csv")
-tabDemerde <- c()
-tabdaysBeforeRain <- filter(tabdaysBeforeRain , rain != "NA")
-for (i in 1:length(tabdaysBeforeRain)){
-  if(tabdaysBeforeRain[i]   ==  tabdaysBeforeRain[i+1]-1 ){
-    tabDemerde <- c(tabDemerde ,tabdaysBeforeRain[i] )
-  }
-}
-
-
-
-tabFinale <- c()
-for (i in 1:length(tabDemerde)){
-  if(i!= 1){
-    if(tabDemerde[i]   !=  tabDemerde[i-1]+1){
-      tabFinale <- c(tabFinale ,tabDemerde[i])
-    }else if(tabDemerde[i]   !=  tabDemerde[i+1]-1 ){
-      tabFinale <- c(tabFinale ,tabDemerde[i])
-    }
-  }
-}
-
-
-
-
-data_meteo <- filter(data_meteo , "rain" != "NA")
-data_meteo_season <-filter(data_meteo , "rain" != "NA")
-
-vraiFinal <- c()
-for(i in 1:length(tabFinale)){
-  if( i %% 2 ==0){
-    a <- tabFinale[i+1] - tabFinale[i]
-    if(a > 150 && a < 200){
-      dataFini <- data_meteo_season %>% slice(tabFinale[i]:tabFinale[i+1])
-      print(data_meteo_season %>% slice(tabFinale[i]:tabFinale[i+1]))
-      #vraiFinal <-c(vraiFinal , data_meteo %>% slice(tabFinale[i]:tabFinale[i+1]) )
-      plot(dataFini$humidity)
-      plot(dataFini$temperature)
-      plot(dataFini$pressure)
-      plot(dataFini$light)
-      break;
-    }
-    
-  }
- 
-}
+# 
+# tabdaysBeforeRain <- JoursAvant("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSorti.csv")
+# tabDemerde <- c()
+# tabdaysBeforeRain <- filter(tabdaysBeforeRain , rain != "NA")
+# for (i in 1:length(tabdaysBeforeRain)){
+#   if(tabdaysBeforeRain[i]   ==  tabdaysBeforeRain[i+1]-1 ){
+#     tabDemerde <- c(tabDemerde ,tabdaysBeforeRain[i] )
+#   }
+# }
+# 
+# 
+# 
+# tabFinale <- c()
+# for (i in 1:length(tabDemerde)){
+#   if(i!= 1){
+#     if(tabDemerde[i]   !=  tabDemerde[i-1]+1){
+#       tabFinale <- c(tabFinale ,tabDemerde[i])
+#     }else if(tabDemerde[i]   !=  tabDemerde[i+1]-1 ){
+#       tabFinale <- c(tabFinale ,tabDemerde[i])
+#     }
+#   }
+# }
+# 
+# 
+# 
+# 
+# data_meteo <- filter(data_meteo , "rain" != "NA")
+# data_meteo_season <-filter(data_meteo , "rain" != "NA")
+# 
+# vraiFinal <- c()
+# for(i in 1:length(tabFinale)){
+#   if( i %% 2 ==0){
+#     a <- tabFinale[i+1] - tabFinale[i]
+#     if(a > 150 && a < 200){
+#       dataFini <- data_meteo_season %>% slice(tabFinale[i]:tabFinale[i+1])
+#       print(data_meteo_season %>% slice(tabFinale[i]:tabFinale[i+1]))
+#       #vraiFinal <-c(vraiFinal , data_meteo %>% slice(tabFinale[i]:tabFinale[i+1]) )
+#       plot(dataFini$humidity)
+#       plot(dataFini$temperature)
+#       plot(dataFini$pressure)
+#       plot(dataFini$light)
+#       break;
+#     }
+#     
+#   }
+#  
+# }
 #"C:\\Users\\dahie\\AppData\\Local\\Programs\\Python\\Python39\\python.exe"
 #C:\Users\dahie\Documents\SDN-S6\Projet_Data\DataV2\dataTrainSorti.csv
-library(reticulate)
+ library(reticulate)
+# 
 
-path_to_python <- "C:/Users/dahie/AppData/Local/r-miniconda/envs/r-reticulate/python.exe"
+path_to_python <- "C:/Python39/python.exe"
 use_python(path_to_python, required = TRUE)
-
+# C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\Stat\\Stat_Projet_Data\\RecupPluieTrue.py
 py_install("pandas")
-source_python("RecupPluieTrue.py")
+
+source_python("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\Stat\\Stat_Projet_Data\\RecupPluieTrue.py")
+monCsv <- openMonCsv("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSorti.csv")
+maTabPluie <- trie(monCsv)
+tabDataFrame <- SubsetData(maTabPluie)
+newCollection <- TrieTaille(50,tabDataFrame , monCsv)
+
+library(ggplot2)
+
+# p <- ggplot(data_meteo ,aes(x=data_meteo$humidity, y=data_meteo$X_id))+geom_point()
+# show(p)
+
+for (elem in newCollection){
+  #p <- qplot(x=elem[' humidity'],data=elem,xlim=c(0,1000))
+  p <- ggplot(elem ,aes(x=elem$humidity,y=elem$temperature))+geom_point()
+  show(p)
+  View(elem)
+  break
+}
+
+a <- newCollection[0]
+View(a)
 
 testi <- monTest("C:\\Users\\dahie\\Documents\\SDN-S6\\Projet_Data\\DataV2\\dataTrainSorti.csv")
 
