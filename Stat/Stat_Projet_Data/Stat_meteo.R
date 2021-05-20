@@ -187,12 +187,13 @@ newCollection <- TrieTaille(50,tabDataFrame , monCsv)
 
 library(ggplot2)
 
-ggplot(aes(x=elem[' humidity'],y=elem[' temperature']),data=pf)+geom_point()
+# p <- ggplot(data_meteo ,aes(x=data_meteo$humidity, y=data_meteo$X_id))+geom_point()
+# show(p)
 
 for (elem in newCollection){
   #p <- qplot(x=elem[' humidity'],data=elem,xlim=c(0,1000))
-  p <- ggplot(aes(x=elem[' humidity'],y=elem[' temperature']),data=elem)+geom_point()
-    show(p)
+  p <- ggplot(elem ,aes(x=elem$humidity,y=elem$temperature))+geom_point()
+  show(p)
   View(elem)
   break
 }
