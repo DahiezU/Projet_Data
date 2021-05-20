@@ -1,14 +1,7 @@
-import numpy as np
-import csv
+import pandas
+
 
 def monTest(ver):
-    
-    with open(ver, "r",newline='') as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
-    
-        
-        
-        return spamreader
-
-
-#monTest("C:\\Users\\dahie\\Documents\\SDN-S6\\Projet_Data\\Donnees\\Entrainement\\dataEssai.csv")
+    moncsv = []
+    ble = pandas.read_csv(ver)
+    return ble

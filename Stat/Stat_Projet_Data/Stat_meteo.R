@@ -176,9 +176,9 @@ library(reticulate)
 path_to_python <- "C:/Users/dahie/AppData/Local/r-miniconda/envs/r-reticulate/python.exe"
 use_python(path_to_python, required = TRUE)
 
+py_install("pandas")
 source_python("RecupPluieTrue.py")
+
 testi <- monTest("C:\\Users\\dahie\\Documents\\SDN-S6\\Projet_Data\\DataV2\\dataTrainSorti.csv")
-testicsv <- read.csv(testi)
-View(testicsv)
 
-
+View(testi)
