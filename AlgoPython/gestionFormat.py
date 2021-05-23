@@ -55,6 +55,23 @@ class FormatData():
                                         spamwriter.writerow([delta , row[1] , delta , row[3] , row[4] ,  row[6] , row[5]])
         
     
+    def formateQuPluie(self , CsvEntre , CsvSorti ):
+        i = 0
+        with open(CsvEntre, newline='') as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            with open(CsvSorti, 'w', newline='') as csvfile:
+                spamwriter = csv.writer(csvfile, delimiter=',',quotechar=' ', quoting=csv.QUOTE_MINIMAL)
+                for row in spamreader: 
+                    if(i==0):
+                        next(spamreader)
+                        i += 1
+                    elif(row[6] != '' and row[6] != ' '):
+                        if(int(row[6]) != 0):
+                            spamwriter.writerow([row[0] , row[1] , row[2] , row[3] , row[4] ,  row[5] , 1])
+                        else:
+                            spamwriter.writerow([row[0] , row[1] , row[2] , row[3] , row[4] ,  row[5] , row[6]])
+        
+
     def supprimeLastCaract(self , CsvEntre , CsvSorti):
             with open(CsvEntre, newline='') as csvfile:
                 spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
@@ -72,6 +89,11 @@ class FormatData():
 test = FormatData( "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrain.csv" , "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTest.csv" ,
 "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSorti.csv" , "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTestSorti.csv")
 
+
+test.formateQuPluie("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSorti.csv" ,"C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSortiPluie1.csv" )
+
+
+'''
 test.decale("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrain.csv" , "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSorti.csv")
 test.decale("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTest.csv" , "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTestSorti.csv")
 
@@ -81,7 +103,7 @@ test.transformDate("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\
 
 test.supprimeLastCaract("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSortiSortie.csv" , "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainFinale.csv")
 
-test.supprimeLastCaract("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTestSortiSortie.csv" , "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTestFinale.csv")
+test.supprimeLastCaract("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTestSortiSortie.csv" , "C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTestFinale.csv")'''
 
 
 

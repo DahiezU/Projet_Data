@@ -2,7 +2,6 @@ library(questionr)
 library(readr)
 library(dplyr)
 library(stringr)
-
 library(reticulate)
 
 data_meteo <- read.csv("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSorti.csv", header=TRUE)
@@ -31,6 +30,9 @@ data_meteo_season$season[data_meteo_season$month>1&data_meteo_season$month<=3]<-
 data_meteo_season$season[data_meteo_season$month>3&data_meteo_season$month<=6]<-"spring"
 data_meteo_season$season<-factor(data_meteo_season$season,levels=c("summer","spring","winter","autumn"))
 summary(data_meteo_season)
+
+
+
 
 summer <- filter(data_meteo_season, season == "summer", rain != "NA")
 autumn <- filter(data_meteo_season, season == "autumn", rain != "NA")
@@ -104,21 +106,21 @@ plot(winter$humidity , winter$rain)
 
 
 
-
-JoursAvant<-function(monCsv){
-  tableau <- c()
-  index <- c()
-  for (i in monCsv){
-    Ligne <- read.csv(i, header=TRUE)
-    pluie <- Ligne['rain']
-    tableau <- c(tableau , which(pluie > 0) )
-    
-    
-    
-  }
-  
- 
-}
+# 
+# JoursAvant<-function(monCsv){
+#   tableau <- c()
+#   index <- c()
+#   for (i in monCsv){
+#     Ligne <- read.csv(i, header=TRUE)
+#     pluie <- Ligne['rain']
+#     tableau <- c(tableau , which(pluie > 0) )
+#     
+#     
+#     
+#   }
+#   
+#  
+# }
 
 
 
@@ -171,36 +173,62 @@ JoursAvant<-function(monCsv){
 # }
 #"C:\\Users\\dahie\\AppData\\Local\\Programs\\Python\\Python39\\python.exe"
 #C:\Users\dahie\Documents\SDN-S6\Projet_Data\DataV2\dataTrainSorti.csv
- library(reticulate)
+
 # 
 
-path_to_python <- "C:/Python39/python.exe"
-use_python(path_to_python, required = TRUE)
-# C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\Stat\\Stat_Projet_Data\\RecupPluieTrue.py
-py_install("pandas")
+# path_to_python <- "C:/Python39/python.exe"
+# use_python(path_to_python, required = TRUE)
+# # C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\Stat\\Stat_Projet_Data\\RecupPluieTrue.py
+# py_install("pandas")
+# 
+# source_python("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\Stat\\Stat_Projet_Data\\RecupPluieTrue.py")
+# monCsv <- openMonCsv("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSorti.csv")
+# maTabPluie <- trie(monCsv)
+# tabDataFrame <- SubsetData(maTabPluie)
+# newCollection <- TrieTaille(120,150,tabDataFrame , monCsv)
+# 
+# 
+# 
+# # p <- ggplot(data_meteo ,aes(x=data_meteo$humidity, y=data_meteo$X_id))+geom_point()
+# # show(p)
+# 
+# cor.test()
+# 
+# for (elem in newCollection){
+# 
+#   plot( elem[" humidity"], main="Humidité au fil des heures entre 2 perdiodes de pluie",
+#         ylab="% Humidité",
+#         xlab="Index Données",
+#         type="l",
+#   col="blue")
+#   
+#   
+#     plot( elem[" pressure"], main="Pressions entre 2 perdiodes de pluie",
+#           ylab="Pression",
+#           xlab="Index Données",
+#           type="l",
+#           col="red")
+#     
+#     
+#     plot( elem[" light"], main="Lumiere entre 2 perdiodes de pluie",
+#           ylab="Pression",
+#           xlab="Index Données",
+#           type="l",
+#           col="yellow")
+#  
+# }
 
-source_python("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\Stat\\Stat_Projet_Data\\RecupPluieTrue.py")
-monCsv <- openMonCsv("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSorti.csv")
-maTabPluie <- trie(monCsv)
-tabDataFrame <- SubsetData(maTabPluie)
-newCollection <- TrieTaille(50,tabDataFrame , monCsv)
 
-library(ggplot2)
 
-# p <- ggplot(data_meteo ,aes(x=data_meteo$humidity, y=data_meteo$X_id))+geom_point()
-# show(p)
+data_meteo_season$hour <- strtoi(str_sub(data_meteo_season$date..date, 13, 14))
 
-for (elem in newCollection){
-  #p <- qplot(x=elem[' humidity'],data=elem,xlim=c(0,1000))
-  p <- ggplot(elem ,aes(x=elem$humidity,y=elem$temperature))+geom_point()
-  show(p)
-  View(elem)
-  break
-}
+data_meteo_jour<- filter(data_meteo_season , hour >=  7)
 
-a <- newCollection[0]
-View(a)
+data_meteo_jour <-  filter(data_meteo_jour , hour <=  21)
 
+
+
+data_meteo_season[hour > 7]
 
 
 

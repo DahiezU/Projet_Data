@@ -2,17 +2,30 @@
 title: "Raport_Projet_AcLab"
 author: "Dahiez Burdy"
 date: "20/05/2021"
-output: html_document
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(readr)
 library(dplyr)
-library(plotrix)
 library(questionr)
-library(jsonlite)
-library(maps)
+library(reticulate)
+library(stringr)
+library(ggpubr)
+library(inserttable)
+
+#data_meteo <- read.csv("C:\\Users\\dahie\\Documents\\SDN-S6\\Projet_Data\\DataV2\\dataTrainSorti.csv", header=TRUE)
+
+data_meteo <- read.csv("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSorti.csv", header=TRUE)
+#data_meteo <- read.csv("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSortiPluie1.csv", header=TRUE)
+#data_meteo <- filter(data_meteo , rain != "NA" , pressure != "NA")
+
+
+data_meteo_season <- data_meteo
 
 ```
 
@@ -23,27 +36,562 @@ Sur ce tp, nous allons annalyser des données météo enregistré par une sonde 
 - Hypothèse :
 
 Nous émetons l'hypothèse que la diminution de pression est un facteur annonciateur de la pluie.
-Nous émetons l'hipothèse que le facteur d'humidité est un facteur annonciateur de la pluie plus conséquent en hiver que pendant les autres saisons.
+
+Nous émetons l'hypothèse que le facteur d'humidité est un facteur annonciateur de la pluie plus conséquent selon la saison.
+
 Nous émetons l'hypothèse que la température diminue avant l'arrivé de la pluie.
-Nous émetons l'hypothèse que si nous detectons la présence de la pluie moins de 10 minutes avant la prédiction, la probabilitée augmente. 
+
+Nous émetons l'hypothèse que si nous detectons la présence de la pluie moins de 10 minutes avant la prédiction, la probabilitée qu'il pleuve augmente. 
+
+Nous émétons l'hypothèse que la nuit est un facteur annonciateur de la pluie.
+
+Est il possible de creer un algorythme de prédiction  d'apparition de la pluie ayant une precision de plus de 0.8 ?
 
 
-## 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+# Analyse de la Pression
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Pour etre sûr que cette hypothése est intéréssante nous allons recherché la corrélation entre la Pression atmosphérique et l'apparition de pluie .Nous voulons déja savoir si la temperature à une corrélation avec la pressions athmosphérique . Pour ce faire nous executons ces commandes suivantes :
 
-```{r cars}
-summary(cars)
+```{r cortest pressure and temperature }
+cor.test(data_meteo$pressure , data_meteo$temperature) #-0.31
+
 ```
 
-## Including Plots
+la corrélation entre la température et la pression est de -0.31 avec un p-value très faible , la temperarute à donc une influence sur la pression . Sachant que le cycle du soleil joue un grand rôle sur la température relevé nous décidons de ne traiter les données effectué entre 7 heures et 19 heures .
 
-You can also embed plots, for example:
+
+```{r cortest filter heure }
+
+data_meteo_season$hour <- strtoi(str_sub(data_meteo_season$date..date, 13, 14))
+
+data_meteo_jour<- filter(data_meteo_season , hour >=  7)
+
+data_meteo_jour <-  filter(data_meteo_jour , hour <=  21)
+```
+On observe que de 8 a 10 heures les données ne sont pas traitées par problème de selection dans R studio . 
+
+Maintenant on  vas observer la correlation entre la pression et la pluie pour une journée les de 7 heure à 21 heures 
+```{r cortest pressure and rain }
+
+cor.test(data_meteo_jour$pressure , data_meteo_jour$rain) #-0.07924169 
+
+
+```
+
+
+
+On observe ici une très légére correlation négative , est un p-value très faible . Nous  en déduisons donc que l'analyse de l'évolution de la préssion athmosphérique ne peut pas nous permettre de determiner fiablement si la pluie risque de tomber dans l'heure . 
+
+
+
+Pour confirmer graphiquement que la Pression athmosphérique n'est pas un bon indicateur  nous avons extrait les données se trouvant juste avant une période de pluie . Pour faire plus simple nous selectionnons les données se trouvant entre chaque péridode de pluie grace un un code python. 
+
+```{r python}
+#path_to_python <- "C:/Python39/python.exe"
+#use_python(path_to_python, required = TRUE)
+# C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\Stat\\Stat_Projet_Data\\RecupPluieTrue.py
+py_install("pandas")
+
+#Ulysse py
+
+# source_python("C:\\Users\\dahie\\Documents\\SDN-S6\\Projet_Data\\Stat\\Stat_Projet_Data\\RecupPluieTrue.py")
+# monCsv <- openMonCsv("C:\\Users\\dahie\\Documents\\SDN-S6\\Projet_Data\\DataV2\\dataTrainSorti.csv")
+
+source_python("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\Stat\\Stat_Projet_Data\\RecupPluieTrue.py")
+#monCsv <- openMonCsv("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSortiPluie1.csv")
+monCsv <- openMonCsv("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSorti.csv")
+heureAdd <- AddHour(monCsv)
+maTabPluie <- trie(heureAdd)
+tabDataFrame <- SubsetData(maTabPluie)
+newCollection <- TrieTaille(120,180,tabDataFrame , heureAdd)
+
+```
+
+La varable NewCollection est une liste de dataFrame de periode d'avant pluie comprise entre 120 et 150 données ( correspondant aproximativement à une journée de 24 heures ).
 
 ```{r pressure, echo=FALSE}
-plot(pressure)
+
+for (elem in newCollection){
+ 
+
+  
+     plot( elem$` pressure` , main="Pressions entre 2 perdiodes de pluie",
+           ylab="Pression",
+          xlab="Index Données",
+           type="l",
+           col="red")
+  
+  # ggplot(data=elem,
+  #      aes(x=elem$` pressure`, y=elem$` humidity`, colour=variable)) +
+  #      geom_line()
+
+  # a <-ggplot(elem) + geom_point(aes(x = elem$`_id` , y=elem$` pressure` ))
+  # show(a)
+  
+  
+    
+  # v <- ggscatter(elem, x = elem$`_id`, y = elem$` pressure`, 
+  #         add = "reg.line", conf.int = TRUE, 
+  #         cor.coef = TRUE, cor.method = "pearson",
+  #         xlab = "Miles/(US) gallon", ylab = "Weight (1000 lbs)")
+  # 
+  # 
+  # 
+  # Show(v)
+
+}
+
+
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Dans l'objective nous voudrions voir une augmentation ou une diminution de clair de la pression pouvant nous permettre de prédire la pluie  sans trop de risuqe de ce tromper. Ces graphiques montre bien la très faible corrélation trouvé ci dessus. 
+
+
+# Analyse de la température :
+
+Toujour dans le même objectif de trouver une variable présentant une  forte corrélation avec la varibale pluie, nous décidons maintenant d'observer la corelation entre la température et la pluie. 
+
+Pour limiter les variation de température lié au cycle jour / nuit du soleil nous décidons de traiter des données effectué entre 7:00 heure et 21:00 heures.
+
+```{r corelaltion  temperature et pluie + } 
+
+cor.test(data_meteo_jour$temperature , data_meteo_jour$rain)
+
+
+```
+on observe une  corrélation négative relativement forte entre la temperature et la présense de pluie , ce qui semble logique , la pluis diminue forcément la température extérieure .
+
+Essayons de regarder maintenant si l'arrivé de la pluie est précédé par une diminution de la température . 
+
+
+
+```{r filter plot temperature  ech } 
+
+
+
+
+
+# 
+# for (elem in newCollection){
+#    
+# 
+#     plot( elem[" temperature"], main="temperature  entre 2 perdiodes de pluie",
+#           ylab="Temperature ( en degré ° )",
+#           xlab="Index Données",
+#           type="l",
+#           col="blue"  )
+# 
+#   
+# }
+
+
+```
+
+
+La température semble effectivement etre assez basse à l'arret de la pluie et semble dans la plupart des cas léérement diminué lors de l'arrivée de la pluie mais ces resultats  ne semble pas rééllement etre un moyen de prédire efficassement la pluie .  
+
+
+# Analyse de l'humidité :
+
+Nous pensons que l'humidité  doit être croissante avant  l'arrivé de la pluie . Nous cherchons tout d'abord à s'avoir si  une correlation existe entre l'humidité et la quantité de Pluie. 
+Toujours  limiter les variation d'humidité lié au cycle jour / nuit du soleil  et de la rosée nous décidons de traiter des données effectué entre 7:00 heure et 21:00 heures.
+
+```{r corelaltion  temperature et pluie  } 
+
+cor.test(data_meteo_jour$humidity , data_meteo_jour$rain)# 0.30
+
+
+```
+
+
+On observe étonnament une  corrélation plus faible que nous ne le pensions entre la pluie et le pourcentage d'humidité . Nous nous attendions à trouver un corélation positive et  très élévé . 
+
+Nous allons donc observer les graphs sur les quelques échantillons correspondants. 
+
+
+```{r filter plot temperature  echantillons } 
+
+
+
+for (elem in newCollection){
+   
+
+    plot( elem[" humidity"], main="% Humidité entre 2 perdiodes de pluie",
+          ylab="humidity ( en degré ° )",
+          xlab="Index Données",
+          type="l",
+          col="blue"  )
+
+  
+}
+
+```
+
+On observe que le pourcentage d'humidité est toujours très élevé à la fin d'une période de pluie par contre l'augmentation de se pourcentage ne semble pas toujours mené  à une pédiode de pluie. 
+
+
+
+## Moyenn millieu perdiode sans pluie vs juste avant la pluie 
+```{r }
+# source_python("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\Stat\\Stat_Projet_Data\\RecupPluieTrue.py")
+# monCsv <- openMonCsv("C:\\Users\\sburd\\OneDrive\\Bureau\\Semestre2\\Projet_Data\\DataV2\\dataTrainSorti.csv")
+# #heureAdd <- AddHour(monCsv)
+# maTabPluie <- trie(monCsv)
+# tabDataFrame <- SubsetData(maTabPluie)
+# newCollection <- TrieTaille(100,800,tabDataFrame , monCsv)
+# TakeDonnePeriode <- MoyenneMidPerdiodeFalsePluieVsBeforePluie(newCollection)
+# resMillieu <- resMoyenneMillieu(TakeDonnePeriode[0])
+# resBefore <- resMoyenneBefore(TakeDonnePeriode[1])
+
+
+# {'HumidityM': 47.888888888888886, 'TemperatureM': 23.9, 'PressureM': 1004.0, 'LightM': 529.6666666666666}
+# {'HumidityB': 59.2, 'TemperatureB': 22.3, 'PressureB': 1001.4, 'LightB': 153.6}
+
+# vM <- c(round(47.888888888888886,2), round(23.9,2), round(1004.0,2), round(529.6666666666666,2))
+# valeurMoyenneMillieu<-as.matrix(vM)
+# 
+# vB <- c(round(59.2,1), round(22.3,1), round(1001.4,1), round(153.6,1))
+# valeurMoyenneBefore<-as.matrix(vB)
+# 
+# 
+# barplotvM <- barplot(vM,
+#                        col = c("blue", "green", "yellow", "red"),
+#                        legend.text = c(paste("Humidité : % moy : " , round(59.2,2)) ,
+#                                        paste("Temperature : température moy : " , round(22.3,2) ,"°C"),
+#                                        paste("Pression :  pressions moy" , round(1001.4,2)),
+#                                        paste("Lumière :  moy : " , round(153.6,2)) 
+#                                        ),
+#                        main = paste("Graphique montrant la moyenne des \n variables détécté lors de période de beau temps"),
+#                        ylim = c(0,1010),
+#                        xlab = "Varaible mesurées",
+#                        ylab = "moyenne"
+#                        
+# )
+# 
+# 
+# barplotvB <- barplot(vB,
+#                        col = c("blue", "green", "yellow", "red"),
+#                        legend.text = c(paste("Humidité : % moy : " , round(47.888888888888886,2)) ,
+#                                        paste("Temperature : température moy : " , round(23.9,2) ,"°C"),
+#                                        paste("Pression :  pressions moy" , round(1004.0,2)),
+#                                        paste("Lumière :  moy : " , round(529.6666666666666,2)) 
+#                                        ),
+#                        main = paste("Graphique montrant la moyenne des \n variables détécté quelque seconde avant un épisode de pluie"),
+#                        ylim = c(0,1010),
+#                        xlab = "Varaible mesurées",
+#                        ylab = "moyenne"
+#                        
+# )
+
+
+barplotvM <- barplot(c(round(47.888888888888886,2) , round(59.2,2)),
+                       col = c("blue", "blue"),
+                       legend.text = c(paste("Humidité perdiode Beau temp: % moy : " ,round(47.888888888888886,2) ) ,
+                                       paste("Humidité perdiode avant pluie  : % moy : " , round(59.2,2))),
+                       main = paste("Graphique montrant la moyenne des \n de l'humidité détécté lors de période de beau temps vs perdiode de pré pluie"),
+                       ylim = c(0,100),
+                       xlab = "Humidité mesuré",
+                       ylab = "moyenne"
+)
+
+
+barplotvM <- barplot(c(23.9 , 22.3),
+                       col = c("red", "red"),
+                       legend.text = c(paste("température perdiode Beau temp:  moy : " , 23.9 ) ,
+                                       paste("Humidité perdiode avant pluie  :  moy : " , 22.3)),
+                       main = paste("Graphique montrant la moyenne des \n de la temperature détécté lors de période de beau temps vs perdiode de pré pluie"),
+                       ylim = c(15,28),
+                       xlab = "temperature mesuré",
+                       ylab = "moyenne"
+)
+
+
+barplotvM <- barplot(c(1004.0 , 1001.2),
+                       col = c("green", "green"),
+                       legend.text = c(paste("Pression perdiode Beau temp:  moy : " , 1004.0 ) ,
+                                       paste("Pression perdiode avant pluie  :  moy : " , 1001.2)),
+                       main = paste("Graphique montrant la moyenne des \n de la Pression détécté lors de période de beau temps vs perdiode de pré pluie"),
+                       ylim = c(998,1005),
+                       xlab = "Pression mesuré",
+                       ylab = "moyenne"
+)
+
+
+barplotvM <- barplot(c(529.6666666666666 , 153.6),
+                       col = c("yellow", "yellow"),
+                       legend.text = c(paste("Lumière perdiode Beau temp:  moy : " , 529.66 ) ,
+                                       paste("Lumière perdiode avant pluie  :  moy : " , 153.6)),
+                       main = paste("Graphique montrant la moyenne des \n de la Lumière détécté lors de période de beau temps vs perdiode de pré pluie"),
+                       ylim = c(120,560),
+                       xlab = "Lumière mesuré",
+                       ylab = "moyenne"
+)
+
+
+
+```
+
+On observe que la moyenne d'humidité juste avant une période de pluie est plus élévé de presque 10 point .
+La température moyenne perd presque 1 degré juste avant une période de pluie .
+La pression atmosphérique  moyenne est au alentour de 1001 juste avant une période de pluie alors qu'elle est au alentour de 1004 lors de période de beau temps .
+La lumière détécté est quand à elle presque 4 fois supérieure lors de période de beau temps .
+c'est information semble montrer qu'une période de pluie peut finalement etre prédit lorsque l'on regarde les moyennes . 
+
+
+
+
+## Facteur d'humidité en hiver
+
+Nous émetons l'hipothèse que le facteur d'humidité est un facteur annonciateur de la pluie plus conséquent en hiver que pendant les autres saisons.
+
+
+
+```{r saison }
+
+
+
+data_meteo_season$month <- strtoi(str_sub(data_meteo$date..date, 7, 8))
+
+data_meteo_season$season<-"summer"
+data_meteo_season$season[data_meteo_season$month>9&data_meteo_season$month<=12]<-"autumn"
+data_meteo_season$season[data_meteo_season$month>1&data_meteo_season$month<=3]<-"winter"
+data_meteo_season$season[data_meteo_season$month>3&data_meteo_season$month<=6]<-"spring"
+data_meteo_season$season<-factor(data_meteo_season$season,levels=c("summer","spring","winter","autumn"))
+
+
+summer <- filter(data_meteo_season, season == "summer", rain != "NA", humidity != "NA", temperature != "NA")
+autumn <- filter(data_meteo_season, season == "autumn", rain != "NA", humidity != "NA",  temperature != "NA")
+spring <- filter(data_meteo_season, season == "spring", rain != "NA", humidity != "NA",  temperature != "NA")
+winter <- filter(data_meteo_season, season == "winter", rain != "NA", humidity != "NA",  temperature != "NA")
+
+corWin = cor( winter$humidity, winter$rain, method=c("pearson", "kendall", "spearman")) #0.4774225
+corSum = cor( summer$humidity, summer$rain, method=c("pearson", "kendall", "spearman")) #0.2675425
+corAut = cor( autumn$humidity, autumn$rain, method=c("pearson", "kendall", "spearman")) #0.313826
+corSpr = cor( spring$humidity, spring$rain, method=c("pearson", "kendall", "spearman")) #  0.3957939
+
+
+
+
+CorSaisVal<-as.matrix(c(corWin, corSpr, corSum, corAut))
+
+
+
+barplotsais <- barplot(c(corWin, corSpr, corSum, corAut),
+                       col = c("blue", "green", "yellow", "red"),
+                       legend.text = c(paste("Hiver : température moy : " , round(mean(winter$temperature), 1),"°C") ,
+                                       paste("Printemps : température moy : " , round(mean(spring$temperature), 1),"°C"),
+                                       paste("été :  température moy" , round(mean(summer$temperature), 1),"°C"),
+                                       paste("Automne : température moy : " , round(mean(autumn$temperature), 1),"°C") 
+                                       ),
+                       main = paste("Graphique montrant la corrélation entre \n l'humidité et la pluie selon la saison"),
+                       ylim = c(0,0.5),
+                       xlab = "Saison",
+                       ylab = "Corrélation"
+                       
+)
+
+text(barplotsais ,CorSaisVal+0.02,labels=round(CorSaisVal,2)) 
+
+```
+D'après les données recueillit, nous pouvons constater que plus la saison est froide, plus le taux d'humidité est en corrélation avec l'arrivé de la pluie.
+
+L'hypothèse suggèrant que le facteur d'humidité est un facteur plus conséquent selon la saison est validée, sur le graphique ci-dessus, nous constatons que la corrélation entre l'humidité et la pluie est prêts de deux fois supérieur en hiver que pendant une autre saison.
+
+À partir de ces résultats, nous pourrons donner plus d'importances à la valeur d'humidité selon la saison et selon la température.
+
+
+
+
+
+
+
+## Le cycle jour/nuit jour sur la pluie
+
+Nous émétons l'hypothèse que la nuit est un facteur annonciateur de la pluie.
+
+
+
+```{r jour/nuit + pluie}
+data_meteo_rain <- data_meteo
+data_meteo_rain <- filter(data_meteo_rain, rain != "NA" & light != "NA")
+
+data_meteo_rain$pluie[data_meteo_rain$rain>0]<-"oui"
+data_meteo_rain$pluie[data_meteo_rain$rain==0]<-"non"
+data_meteo_rain$jour[data_meteo_rain$light>0]<-"jour"
+data_meteo_rain$jour[data_meteo_rain$light==0]<-"nuit"
+
+data_meteo_jour <- filter(data_meteo_rain, jour == "jour")
+data_meteo_nuit <- filter(data_meteo_rain, jour == "nuit")
+
+effectifsjour <- table(data_meteo_jour$pluie)
+racajour=prop.table(effectifsjour) * 100
+effectifsnuit <- table(data_meteo_nuit$pluie)
+racanuit=prop.table(effectifsnuit) * 100
+
+pcrjp7<-as.matrix(c(racajour["oui"],  racanuit["oui"]))
+pcrjp<-as.matrix(c(pcrjp7[1], pcrjp7[2]))
+
+
+barplotjp = barplot(table(data_meteo_rain$pluie, data_meteo_rain$jour),
+        col = c("yellow", "blue"),
+        legend.text = c(paste("Pas de pluie ") ,
+                        paste("pluie ")
+        ),
+        main = paste("Graphique montrant le pourcentage de pluie \n selon la journée ou la nuit."),
+        ylim = c(0,60000),
+        xlab = "periode",
+        ylab = "détéction de pluie"
+        )
+
+text(barplotjp ,pcrjp+45000,labels=as.character(paste(round(pcrjp,1),"%"))) 
+```
+
+
+D'après les données recueillit, non pouvons constater sur le graphique précédant qu'il n'y pas de différence significative entre le jour et la nuit.
+
+L'hypothèse signifiant que le le jour ou la nuit sont des facteurs plus conséquents, est donc fausse malgré le fait que nous avons une petite augmentation de pluie la nuit.
+
+D'après ces résultats, nous savons que le cycle jour nuit n'est pas un facteur assez déterminant pour le prendre en compte lors de la mise en place de l'algorithme de détection de pluie.
+
+
+
+
+# Prediction de l'apparition de la pluie  ( DS ):
+
+Pour prédire le plus présicement possible l'arrivée de la  pluie nous avons choisi d'utiliser l'algorythme knn . Il permet d'analyser un grand nombre de données efficassement et de faire ressortir les données enregistrer précedement les plus proches de celle mesuré actuellement .
+
+
+Nous avons impleté cet algorythme en python .
+Cet algorythme se base sur un jeu de ~80 000 données d'entrainnement et nous observerons les 10 plus proches voisins des X dernières données enregistrer . 
+
+
+
+Pour eviter de selectionner les données chronologiquement voisinnes nous retirons les 4200 données précédents les mesures. Ce qui correspond environs au mois précédent.  
+
+
+Les données d'entrainement etant au format json nous choisissons de convertir au format csv pour facilité leurs traitements.
+Après transfomation du json en csv le format des données est celui-ci.
+
+
+```{r table exemple}
+
+# 
+# Exemple_Donnee  <- tibble::tribble(
+#     ~X_id, ~humidity, ~date..date, ~pressure, ~Temperature, ~rain, ~light, ~t , ~PS ,
+#   "04_27_2017_03_08", "67", "2017-04-27T06:08:36.000+0300" ,"1007 ",  "11" ,"0",  "0", NA, NA,
+#   )
+# 
+# require(rhandsontable)
+# rhandsontable(Exemple_Donnee , rowHeaders = NULL,
+#                digits = 3, useTypes = FALSE, search = FALSE,
+#                width = NULL, height = NULL)
+
+```
+
+On observe que les données de préssence de pluie ne sont pas en dernière position , ce qui posera problème dans la suite de l'algorythme knn créé.
+Un autre problème repéré est le format de la date , nous ne pourrons certainement jamais trouver de voisins pour l'attribut date parcequ'elle fonctionne comme un identifiant unique , elle risquera donc de fausser notre algorythme.
+Pour palier ce problème nous décidons de remplacer la date par sont numéro de jour dans l'année ( exemple : 1 janvier = 1 , 2 janvier 2 , 1 fevrier = 32 , etc...).
+Pour ce faire nous utilisons ce programe codé en python .
+
+
+Le donnée sont maintenant de ce format :
+
+
+```{r table bon format}
+
+# 
+# Exemple_Donnee  <- tibble::tribble(
+#     ~X_id, ~humidity, ~date..date, ~pressure, ~Temperature, ~light,~rain ,
+#   "116", "67", "116" ,"1007 ",  "11" ,"0",  "0",
+#   )
+# 
+# require(rhandsontable)
+# rhandsontable(Exemple_Donnee , rowHeaders = NULL,
+#                digits = 3, useTypes = FALSE, search = FALSE,
+#                width = NULL, height = NULL)
+
+```
+
+
+
+On décide aussi de remplacer les valeur de pluie par 1 si elle sont >= 1 , pour avoir une meilleur différence entre les période de beau temps et les période pluie . 
+
+
+Maintenant nous pouvons commencer à traiter  les données dans l'alogrythme Knn . Pour ce faire nous avons comme dis précédement les  80 000 données de train  et nous prennons pour commmencer les 10 dernières donnes  piur creer les donnes de tests. 
+Soit : 
+
+
+
+```{r python table}
+# 
+# Exemple_Donnee_test  <- tibble::tribble(
+#   ~X_id, ~humidity, ~date..date, ~pressure, ~Temperature, ~light,~rain ,
+#   "22",   "85" ,"22",   "1000" ,  " 1" ,   "0" ,   "0" ,
+#   "22",   "84" ,"22",   "1000" ,  " 1" ,   "0" ,   "0" ,
+#   "22",   "86" ,"22",   "1000" ,  " 1" ,   "0" ,   "0" ,
+#   "22",   "84" ,"22",   "1000" ,  " 1" ,   "0" ,   "0" ,
+#   "22",   "84" ,"22",   "1000" ,  " 1" ,   "0" ,   "0" ,
+#   "22",   "85" ,"22",   "999" ,  " 1" ,   "0" ,   "0" ,
+#   "22",   "85" ,"22",   "999" ,  " 1" ,   "0" ,   "0" ,
+#   "22",   "85" ,"22",   "999" ,  " 1" ,   "0" ,   "0" ,
+#   "22",   "86" ,"22",   "999" ,  " 1" ,   "0" ,   "0" ,
+#   "22",   "85" ,"22",   "999" ,  " 1" ,   "0" ,   "0" ,
+#   )
+# 
+# require(rhandsontable)
+# rhandsontable(Exemple_Donnee_test , rowHeaders = NULL,
+#                digits = 3, useTypes = FALSE, search = FALSE,
+#                width = NULL, height = NULL)
+
+
+```
+
+
+
+
+Pour ces données de test , nous lançons l'algorythme Knn avec, pour commmencer, 10 voisins. 
+Pour chaque ligne testé on trouve d'abord un index des 10 voisins les plus proches 
+
+```{r knn 1er essai}
+# 
+# my_tbl <- tibble::tribble(
+#   ~Indexvoisin1 ,~Indexvoisin2 ,~Indexvoisin3 ,~Indexvoisin4 ,~Indexvoisin5 ,~Indexvoisin6 ,~Indexvoisin7 ,~Indexvoisin8 ,~Indexvoisin9 ,~Indexvoisin10,
+#   "31697", "31713" ,"31711", "31714" ,"31710", "31712", "31702" ,"31704", "31706" ,"31720",
+#   "31697" ,"31713" ,"31711", "31710", "31706" ,"31704", "31712" ,"31702" ,"31703", "31714",
+#   "31697" ,"31713", "31711" ,"31714", "31717", "31720", "31719", "31718", "31722" ,"31710",
+#   "31697", "31713", "31711" ,"31710", "31706", "31704", "31712", "31702" ,"31703", "31714",
+#   "31697", "31713", "31711" ,"31710", "31706", "31704", "31712", "31702", "31703", "31714",
+#   "31713", "31711", "31697", "31714", "31710", "31712", "31720", "31719", "31718", "31722",
+#   "31713", "31711", "31697" ,"31714", "31710", "31712", "31720", "31719", "31718", "31722",
+#   "31713", "31711", "31697" ,"31714", "31710", "31712", "31720", "31719", "31718", "31722",
+#   "31711", "31713", "31714", "31717", "31720", "31719", "31722", "31718", "31697", "31716",
+#   "31713" ,"31711", "31697", "31714","31710", "31712", "31720", "31719", "31718", "31722",
+#   )
+# 
+# require(rhandsontable)
+# rhandsontable(my_tbl, rowHeaders = NULL,
+#                digits = 3, useTypes = FALSE, search = FALSE,
+#                width = NULL, height = NULL)
+
+```
+
+Ensuite on regarde a chaqu'un de ses indices de chaque ligne leur valeur pour l'attribut pluie ,  qui peut etre pour rappel soit 0 (absence de pluie) soit  1 ( presence de pluie).
+
+il se trouve que dans ce cas présis tout les indices ont une valeur de 0 , donc on en débuit que la valeur de prédiction à retourné  est de 0 = absence de pluie. 
+
+Dans le cas ou la valeur des attridus pluie n'est pas que de 0 ou que de 1 , on regarde quelle valeur est la plus représentéz et on la retourne . 
+
+
+
+## Statistique de l'algorythme de prédiction Knn:
+
+Dans l'objectif d'avoir une idée du détaillé de la perfommmance de notre test nous effectuons des test d'accuracy , de présision et de sensibilité de nos resultats trouvés lors de nos tests d'entrainement . 
+
+
+```{ r stat}
+
+
+
+```
